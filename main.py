@@ -12,9 +12,9 @@ def translated(text):
     result = translator.translate(text, dest='tr', src='de')
     return result.text
 
+
 def close_window():
     window.destroy()
-
 
 
 def selenium_task(entry, text_price):
@@ -25,8 +25,7 @@ def selenium_task(entry, text_price):
     import time
     import random
 
-
-    description = ''
+    results = dict()
 
     my_id = entry.get()
 
@@ -131,8 +130,6 @@ def selenium_task(entry, text_price):
         "images": all_images  # Görsel URL'leri burada saklayın
     })
 
-
-
     # Sonucu Tkinter metin alanına yaz
     text_price.configure(state='normal')  # Metin alanını düzenlenebilir yap
     text_price.delete('1.0', tk.END)  # Önceki metni temizle
@@ -149,32 +146,22 @@ def selenium_task(entry, text_price):
         "images": all_images  # Görsel URL'leri burada saklayın
     }
 
+    results['products'] = [data]
     with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-
+        json.dump(results, f, ensure_ascii=False, indent=4)
 
     # Görsel URL'lerini alın ve döndürün
-    return data
-
-
-
-
-
+    return results
 
 
 def start_selenium_thread(entry, text_price):
-
-
     text_price.configure(state='normal')
     text_price.delete('1.0', tk.END)
     text_price.insert(tk.END, "Yükleniyor...")
     text_price.configure(state='disabled')
 
-
     # Selenium işlemini başka bir thread'de başlat
     threading.Thread(target=selenium_task, args=(entry, text_price), daemon=True).start()
-
-
 
 
 # Tkinter penceresini oluştur
@@ -189,16 +176,12 @@ entry.pack()
 submit_button = tk.Button(window, text="Gönder", command=lambda: start_selenium_thread(entry, text_price))
 submit_button.pack(pady=(20, 20))
 
-
-
 close_button = tk.Button(window, text="Kapat", command=close_window)
 close_button.pack(pady=(0, 20))
-
 
 # Metin alanı
 text_price = scrolledtext.ScrolledText(window, wrap=tk.WORD, width=60, height=60, state='disabled')
 text_price.pack()
-
 
 # Pencereyi başlat
 window.mainloop()
